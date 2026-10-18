@@ -35,13 +35,17 @@ main{padding:20px;max-width:1500px;width:100%;margin:auto}.top{display:flex;just
 <div class="grid">
 <section class="panel"><div class="panelhead"><h2>สนามแข่งขัน · 7 คน</h2><select id="formation" onchange="changeFormation()"><option>2-3-1</option><option>3-2-1</option><option>2-2-2</option><option>3-1-2</option></select></div><div class="pitch" id="pitch"><div class="center"></div></div></section>
 <div class="side">
-<section class="panel" id="editor"><div class="panelhead"><h2>เพิ่ม / แก้ไขนักเตะ</h2></div><form class="form" onsubmit="addPlayer(event)">
-<div class="photo" id="photoBox">เลือกรูปนักเตะ <input id="photo" type="file" accept="image/*" style="display:none" onchange="preview(event)"></div>
+<section class="panel" id="editor"><div class="panelhead"><h2 id="formTitle">เพิ่ม / แก้ไขนักเตะ</h2></div>
+<form class="form" onsubmit="addPlayer(event)">
+<div class="photo" id="photoBox">เลือกรูปนักเตะ</div>
+<input id="photo" type="file" accept="image/*" style="display:none" onchange="preview(event)">
 <button type="button" class="btn" onclick="document.getElementById('photo').click()">📷 เพิ่มรูป</button>
-<div class="two"><div class="field"><label>ชื่อ / ชื่อเล่น</label><input id="name" required placeholder="เช่น Pong"></div><div class="field"><label>เบอร์เสื้อ</label><input id="number" type="number" min="1" max="99" value="7"></div></div>
-<div class="two"><div class="field"><label>ตำแหน่ง</label><select id="pos"><option>GK</option><option>CB</option><option>LB</option><option>RB</option><option>CM</option><option>CAM</option><option>LW</option><option>RW</option><option>ST</option></select></div><div class="field"><label>Overall</label><input id="ovr" type="number" min="1" max="99" value="75"></div></div>
+<div class="two"><div class="field"><label>ชื่อ / ชื่อเล่น</label><input id="name" required placeholder="เช่น Pong"></div><div class="field"><label>เบอร์เสื้อ</label><input id="number" type="number" min="1" max="99" value="7" required></div></div>
+<div class="two"><div class="field"><label>ตำแหน่ง</label><select id="pos"><option>GK</option><option>CB</option><option>LB</option><option>RB</option><option>CM</option><option>CAM</option><option>LW</option><option>RW</option><option>ST</option></select></div><div class="field"><label>Overall</label><input id="ovr" type="number" min="1" max="99" value="75" required></div></div>
 <div class="two"><div class="field"><label>เท้าที่ถนัด</label><select id="foot"><option>Right</option><option>Left</option></select></div><div class="field"><label>บทบาท</label><select id="role"><option>Defender</option><option>Playmaker</option><option>Box-to-Box</option><option>Winger</option><option>Target Man</option><option>Goalkeeper</option></select></div></div>
-<button class="btn primary" type="submit">＋ เพิ่มนักเตะเข้าทีม</button></form></section>
+<button class="btn primary" type="submit" id="submitBtn">＋ เพิ่มนักเตะเข้าทีม</button>
+<button class="btn" type="button" id="cancelBtn" onclick="clearForm()" style="display:none; background:var(--danger); border-color:var(--danger); color:#fff;">ยกเลิกแก้ไข</button>
+</form></section>
 <section class="panel" id="roster"><div class="panelhead"><h2>นักเตะในทีม</h2><span id="count" class="sub">0 คน</span></div><div class="roster" id="rosterList"></div></section>
 </div></div>
 <div class="bottom">
@@ -49,6 +53,7 @@ main{padding:20px;max-width:1500px;width:100%;margin:auto}.top{display:flex;just
 <section class="panel" id="tactics"><div class="panelhead"><h2>ค่าสเตตัสทีม</h2><span class="sub">ภาพรวมผู้เล่นที่เลือก</span></div><div class="stats" id="stats"></div></section>
 </div>
 </main></div><div class="toast" id="toast"></div>
+
 <script>
 const defaultPlayers=[
 {id:1,name:"Noppon",number:1,pos:"GK",ovr:78,foot:"Right",role:"Goalkeeper",img:""},
@@ -67,34 +72,169 @@ let players=JSON.parse(localStorage.getItem("sevenSidePlayers")||"null")||defaul
 let photoData="";
 let formation="2-3-1";
 let selected=null;
+
 const positions={
 "2-3-1":[["GK",50,88],["CB",35,68],["CB",65,68],["CM",22,49],["CM",50,51],["CM",78,49],["ST",50,20]],
 "3-2-1":[["GK",50,88],["CB",25,66],["CB",50,69],["CB",75,66],["CM",35,48],["CM",65,48],["ST",50,20]],
 "2-2-2":[["GK",50,88],["CB",34,68],["CB",66,68],["CM",34,48],["CM",66,48],["ST",34,22],["ST",66,22]],
 "3-1-2":[["GK",50,88],["CB",25,68],["CB",50,70],["CB",75,68],["CM",50,47],["ST",34,22],["ST",66,22]]
 };
+
 function avatar(p){return p.img||"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="#163047"/><circle cx="50" cy="40" r="22" fill="#b7c6d1"/><path d="M18 98c3-27 61-27 64 0" fill="#29475d"/></svg>`)}
+
 function render(){renderPitch();renderRoster();renderBench();renderStats();document.getElementById("count").textContent=players.length+" คน"}
+
 function renderPitch(){
-const pitch=document.getElementById("pitch"); pitch.querySelectorAll(".player").forEach(x=>x.remove());
-const spots=positions[formation]; const starters=players.slice(0,7);
-spots.forEach((s,i)=>{const p=starters[i];if(!p)return;const el=document.createElement("div");el.className="player";el.style.left=s[1]+"%";el.style.top=s[2]+"%";el.draggable=true;el.innerHTML=`<button class="remove" onclick="removePlayer(${p.id})">×</button><img class="avatar" src="${avatar(p)}"><div class="pcard"><b>${p.number} · ${p.name}</b><small>${p.pos} · ${p.ovr}</small></div>`;el.ondragstart=e=>e.dataTransfer.setData("id",p.id);el.onclick=()=>selectPlayer(p.id);pitch.appendChild(el)})
-pitch.ondragover=e=>e.preventDefault();pitch.ondrop=e=>{const id=+e.dataTransfer.getData("id");const p=players.find(x=>x.id===id);if(!p)return;const rect=pitch.getBoundingClientRect();const x=((e.clientX-rect.left)/rect.width)*100,y=((e.clientY-rect.top)/rect.height)*100;p.x=x;p.y=y;renderCustomPositions();saveLocal()}
+const pitch=document.getElementById("pitch"); 
+pitch.querySelectorAll(".player").forEach(x=>x.remove());
+const spots=positions[formation]; 
+const starters=players.slice(0,7);
+spots.forEach((s,i)=>{
+  const p=starters[i];if(!p)return;
+  const el=document.createElement("div");
+  el.className="player";
+  el.style.left=(p.x!=null?p.x:s[1])+"%";
+  el.style.top=(p.y!=null?p.y:s[2])+"%";
+  el.draggable=true;
+  el.innerHTML=`<button class="remove" onclick="event.stopPropagation();removePlayer(${p.id})">×</button><img class="avatar" src="${avatar(p)}"><div class="pcard"><b>${p.number} · ${p.name}</b><small>${p.pos} · ${p.ovr}</small></div>`;
+  el.ondragstart=e=>e.dataTransfer.setData("id",p.id);
+  el.onclick=()=>selectPlayer(p.id);
+  pitch.appendChild(el)
+})
+pitch.ondragover=e=>e.preventDefault();
+pitch.ondrop=e=>{
+  const id=+e.dataTransfer.getData("id");
+  const p=players.find(x=>x.id===id);
+  if(!p)return;
+  const rect=pitch.getBoundingClientRect();
+  const x=((e.clientX-rect.left)/rect.width)*100,y=((e.clientY-rect.top)/rect.height)*100;
+  p.x=x;p.y=y;
+  renderPitch();
+  saveLocal()
 }
-function renderCustomPositions(){document.querySelectorAll(".pitch .player").forEach((el,i)=>{const p=players.slice(0,7)[i];if(p.x!=null){el.style.left=p.x+"%";el.style.top=p.y+"%"}})}
+}
+
 function renderRoster(){const box=document.getElementById("rosterList");box.innerHTML="";players.forEach(p=>{const el=document.createElement("div");el.className="mini";el.innerHTML=`<img src="${avatar(p)}"><div><b>${p.number} · ${p.name}</b><small>${p.pos} · OVR ${p.ovr}</small></div>`;el.onclick=()=>selectPlayer(p.id);box.appendChild(el)})}
+
 function renderBench(){const box=document.getElementById("bench");box.innerHTML="";players.slice(7).forEach(p=>{const el=document.createElement("div");el.className="mini";el.innerHTML=`<img src="${avatar(p)}"><div><b>${p.number} · ${p.name}</b><small>${p.pos} · OVR ${p.ovr}</small></div>`;el.onclick=()=>selectPlayer(p.id);box.appendChild(el)});if(!players.slice(7).length)box.innerHTML='<div class="empty">เพิ่มนักเตะมากกว่า 7 คนเพื่อสร้างตัวสำรอง</div>'}
+
 function renderStats(){let s=document.getElementById("stats");if(!players.length){s.innerHTML="";return}let avg=Math.round(players.reduce((a,p)=>a+p.ovr,0)/players.length);s.innerHTML=`<div class="stat"><span>Overall</span><div class="bar"><i style="width:${avg}%"></i></div><b>${avg}</b></div><div class="stat"><span>จำนวน</span><div class="bar"><i style="width:${Math.min(players.length,14)/14*100}%"></i></div><b>${players.length}</b></div><div class="stat"><span>ตัวจริง</span><div class="bar"><i style="width:${Math.min(players.length,7)/7*100}%"></i></div><b>${Math.min(players.length,7)}/7</b></div>`}
-function addPlayer(e){e.preventDefault();players.push({id:Date.now(),name:name.value,number:+number.value,pos:pos.value,ovr:+ovr.value,foot:foot.value,role:role.value,img:photoData});photoData="";document.getElementById("photoBox").innerHTML="เลือกรูปนักเตะ <input id=\"photo\" type=\"file\" accept=\"image/*\" style=\"display:none\" onchange=\"preview(event)\">";saveLocal();e.target.reset();ovr.value=75;number.value=7;showToast("เพิ่มนักเตะแล้ว");render()}
-function preview(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{photoData=r.result;document.getElementById("photoBox").innerHTML=`<img src="${photoData}">`};r.readAsDataURL(f)}
-function removePlayer(id){players=players.filter(p=>p.id!==id);saveLocal();render();showToast("ลบนักเตะแล้ว")}
-function selectPlayer(id){selected=players.find(p=>p.id===id);if(!selected)return;name.value=selected.name;number.value=selected.number;pos.value=selected.pos;ovr.value=selected.ovr;foot.value=selected.foot;role.value=selected.role;photoData=selected.img||"";document.getElementById("editor").scrollIntoView({behavior:"smooth",block:"center"})}
-function changeFormation(){formation=document.getElementById("formation").value;players.slice(0,7).forEach(p=>{p.x=null;p.y=null});render()}
+
+function addPlayer(e){
+  e.preventDefault();
+  
+  const nameVal = document.getElementById("name").value.trim();
+  const numberVal = +document.getElementById("number").value;
+  const posVal = document.getElementById("pos").value;
+  const ovrVal = +document.getElementById("ovr").value;
+  const footVal = document.getElementById("foot").value;
+  const roleVal = document.getElementById("role").value;
+
+  if(!nameVal) return;
+
+  if (selected) {
+    // อัปเดตข้อมูลผู้เล่นเดิม
+    selected.name = nameVal;
+    selected.number = numberVal;
+    selected.pos = posVal;
+    selected.ovr = ovrVal;
+    selected.foot = footVal;
+    selected.role = roleVal;
+    if(photoData) selected.img = photoData;
+    showToast("แก้ไขข้อมูลเรียบร้อยแล้ว");
+  } else {
+    // เพิ่มผู้เล่นใหม่
+    players.push({
+      id: Date.now(),
+      name: nameVal,
+      number: numberVal,
+      pos: posVal,
+      ovr: ovrVal,
+      foot: footVal,
+      role: roleVal,
+      img: photoData
+    });
+    showToast("เพิ่มนักเตะเรียบร้อยแล้ว");
+  }
+
+  clearForm();
+  saveLocal();
+  render();
+}
+
+function preview(e){
+  const f=e.target.files[0];
+  if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    photoData=r.result;
+    document.getElementById("photoBox").innerHTML=`<img src="${photoData}">`;
+  };
+  r.readAsDataURL(f);
+}
+
+function removePlayer(id){
+  players=players.filter(p=>p.id!==id);
+  if(selected && selected.id === id) clearForm();
+  saveLocal();
+  render();
+  showToast("ลบนักเตะแล้ว");
+}
+
+function selectPlayer(id){
+  selected=players.find(p=>p.id===id);
+  if(!selected)return;
+  
+  document.getElementById("name").value=selected.name;
+  document.getElementById("number").value=selected.number;
+  document.getElementById("pos").value=selected.pos;
+  document.getElementById("ovr").value=selected.ovr;
+  document.getElementById("foot").value=selected.foot;
+  document.getElementById("role").value=selected.role;
+  
+  photoData=selected.img||"";
+  if(photoData) {
+    document.getElementById("photoBox").innerHTML=`<img src="${photoData}">`;
+  } else {
+    document.getElementById("photoBox").innerHTML="เลือกรูปนักเตะ";
+  }
+
+  document.getElementById("submitBtn").textContent = "✓ บันทึกการแก้ไข";
+  document.getElementById("cancelBtn").style.display = "block";
+  document.getElementById("formTitle").textContent = "แก้ไขข้อมูลนักเตะ";
+  document.getElementById("editor").scrollIntoView({behavior:"smooth",block:"center"});
+}
+
+function clearForm(){
+  selected = null;
+  photoData = "";
+  document.getElementById("name").value = "";
+  document.getElementById("number").value = 7;
+  document.getElementById("ovr").value = 75;
+  document.getElementById("pos").selectedIndex = 0;
+  document.getElementById("foot").selectedIndex = 0;
+  document.getElementById("role").selectedIndex = 0;
+  document.getElementById("photo").value = "";
+  document.getElementById("photoBox").innerHTML = "เลือกรูปนักเตะ";
+  
+  document.getElementById("submitBtn").textContent = "＋ เพิ่มนักเตะเข้าทีม";
+  document.getElementById("cancelBtn").style.display = "none";
+  document.getElementById("formTitle").textContent = "เพิ่ม / แก้ไขนักเตะ";
+}
+
+function changeFormation(){
+  formation=document.getElementById("formation").value;
+  players.slice(0,7).forEach(p=>{p.x=null;p.y=null});
+  render();
+}
+
 function saveLocal(){localStorage.setItem("sevenSidePlayers",JSON.stringify(players))}
 function saveTeam(){saveLocal();showToast("บันทึก Team Sheet เรียบร้อย")}
-function resetTeam(){if(confirm("รีเซ็ตทีมกลับเป็นตัวอย่าง?")){players=defaultPlayers.map(x=>({...x}));saveLocal();render()}}
+function resetTeam(){if(confirm("รีเซ็ตทีมกลับเป็นตัวอย่าง?")){players=defaultPlayers.map(x=>({...x}));clearForm();saveLocal();render()}}
 function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:"smooth"})}
 function showToast(t){const x=document.getElementById("toast");x.textContent=t;x.style.display="block";clearTimeout(window.tt);window.tt=setTimeout(()=>x.style.display="none",1800)}
+
 render();
 </script>
-</body></html>
+</body>
+</html>
