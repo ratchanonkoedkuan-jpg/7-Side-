@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ultimate Team Manager - Pitch Builder</title>
+<title>Ultimate Team Manager - Vertical Pitch</title>
 <style>
 :root {
   --bg: #050b14;
@@ -147,31 +147,42 @@ main {
 }
 .panelhead h2 { font-size: 16px; margin: 0; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 
-/* Football Pitch Visual */
-.pitch-container { position: relative; padding: 20px; }
+/* Football Pitch Visual (Fixed Scale & Vertical) */
+.pitch-container {
+  position: relative;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: auto;
+}
+
+/* ล็อคขนาดสนามคงที่ (Fixed Width & Height) ไม่ยืด/ซูมตามหน้าจอ */
 .pitch {
   position: relative;
-  width: 100%;
-  aspect-ratio: 1.55 / 1;
+  width: 480px;
+  height: 720px;
+  flex-shrink: 0;
   border-radius: 16px;
   overflow: hidden;
-  background: repeating-linear-gradient(90deg, #124024 0, #124024 8%, #154a2a 8%, #154a2a 16%);
+  background: repeating-linear-gradient(180deg, #124024 0, #124024 8%, #154a2a 8%, #154a2a 16%);
   border: 3px solid rgba(255,255,255,0.3);
   box-shadow: inset 0 0 80px rgba(0,0,0,0.6);
 }
 
+/* เส้นสนามแนวตั้ง */
 .pitch-line { position: absolute; border: 2px solid rgba(255,255,255,0.5); pointer-events: none; }
 .pitch-outer { inset: 4%; border-radius: 4px; }
-.pitch-center-line { left: 50%; top: 4%; bottom: 4%; border-left: 2px solid rgba(255,255,255,0.5); }
-.pitch-center-circle { left: 50%; top: 50%; width: 16%; aspect-ratio: 1; border-radius: 50%; transform: translate(-50%, -50%); }
-.pitch-penalty-left { left: 4%; top: 25%; width: 16%; height: 50%; }
-.pitch-penalty-right { right: 4%; top: 25%; width: 16%; height: 50%; }
+.pitch-center-line { top: 50%; left: 4%; right: 4%; border-top: 2px solid rgba(255,255,255,0.5); }
+.pitch-center-circle { left: 50%; top: 50%; width: 24%; aspect-ratio: 1; border-radius: 50%; transform: translate(-50%, -50%); }
+.pitch-penalty-top { left: 25%; top: 4%; width: 50%; height: 16%; }
+.pitch-penalty-bottom { left: 25%; bottom: 4%; width: 50%; height: 16%; }
 
 /* Player Cards on Pitch */
 .pitch-player {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 80px;
+  width: 75px;
   text-align: center;
   user-select: none;
   cursor: grab;
@@ -184,7 +195,7 @@ main {
   background: rgba(5, 14, 24, 0.92);
   border: 2px solid var(--accent);
   border-radius: 12px;
-  padding: 6px;
+  padding: 5px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.6), 0 0 10px var(--accent-glow);
   position: relative;
 }
@@ -192,8 +203,8 @@ main {
 .player-card.silver { border-color: var(--silver); box-shadow: 0 0 12px rgba(192,192,192,0.3); }
 
 .avatar {
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   margin: 0 auto;
   border-radius: 50%;
   object-fit: cover;
@@ -201,18 +212,18 @@ main {
   display: block;
 }
 
-.pinfo b { display: block; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px; }
-.pinfo small { color: var(--accent); font-weight: 800; font-size: 10px; }
+.pinfo b { display: block; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px; }
+.pinfo small { color: var(--accent); font-weight: 800; font-size: 9px; }
 
 .remove-btn {
   position: absolute;
   top: -6px; right: -6px;
-  width: 20px; height: 20px;
+  width: 18px; height: 18px;
   border-radius: 50%;
   border: none;
   background: var(--danger);
   color: #fff;
-  font-size: 12px;
+  font-size: 11px;
   display: none;
   place-items: center;
   cursor: pointer;
@@ -222,6 +233,8 @@ main {
 
 /* Bench / Roster Dock */
 .roster-dock {
+  width: 100%;
+  max-width: 480px;
   margin-top: 16px;
   background: rgba(5, 11, 20, 0.8);
   border: 1px dashed var(--line);
@@ -315,7 +328,7 @@ input:focus, select:focus { border-color: var(--accent); }
   <aside>
     <div class="brand"><div class="ball">⚽</div> PITCH BUILDER</div>
     <div class="nav">
-      <button class="active">⚽ จัดทีมอิสระ</button>
+      <button class="active">⚽ จัดทีมอิสระ (แนวตั้ง)</button>
       <button onclick="scrollToSec('editor')">➕ เพิ่มนักเตะ</button>
       <button onclick="scrollToSec('statsPanel')">📊 สถิติทีม</button>
       <button onclick="saveTeamSheet()">💾 บันทึกแผน</button>
@@ -325,22 +338,22 @@ input:focus, select:focus { border-color: var(--accent); }
   <main>
     <div class="top">
       <div>
-        <h1>Free-Form Pitch Manager</h1>
-        <div class="sub">จัดตัวผู้เล่นแบบลากวางอิสระไร้ขีดจำกัด</div>
+        <h1>Vertical Pitch Manager</h1>
+        <div class="sub">สนามคงสเกลแนวตั้ง จัดตัวอิสระ 100%</div>
       </div>
       <div class="actions">
         <button class="btn" onclick="clearPitch()">เคลียร์สนาม</button>
-        <button class="btn" onclick="resetDefault()">รีเซ็ตรายชื่อเดิม</button>
+        <button class="btn" onclick="resetDefault()">รีเซ็ตตำแหน่ง</button>
         <button class="btn primary" onclick="saveTeamSheet()">บันทึกแผนทีม</button>
       </div>
     </div>
 
     <div class="grid">
-      <!-- Pitch Area -->
+      <!-- Pitch Area (Vertical) -->
       <div class="left-col">
         <div class="panel">
           <div class="panelhead">
-            <h2>สนามแข่งขัน (ลากวางอิสระ)</h2>
+            <h2>สนามแข่งขันแนวตั้ง (Fixed 480x720px)</h2>
             <div style="display:flex; align-items:center; gap:8px;">
               <span class="sub">โควตาสนาม:</span>
               <select id="squadLimit" onchange="updateLimit()" style="width: auto; padding: 4px 8px;">
@@ -357,8 +370,8 @@ input:focus, select:focus { border-color: var(--accent); }
               <div class="pitch-line pitch-outer"></div>
               <div class="pitch-line pitch-center-line"></div>
               <div class="pitch-line pitch-center-circle"></div>
-              <div class="pitch-line pitch-penalty-left"></div>
-              <div class="pitch-line pitch-penalty-right"></div>
+              <div class="pitch-line pitch-penalty-top"></div>
+              <div class="pitch-line pitch-penalty-bottom"></div>
             </div>
 
             <!-- Bench / Roster Dock -->
@@ -416,43 +429,44 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="toast" id="toast"></div>
 
 <script>
+// ตำแหน่งเริ่มต้นบนสนามแนวตั้ง (Y=0 ด้านบน/กองหน้า, Y=100 ด้านล่าง/ประตู)
 const defaultPlayers = [
-  // โซนกองหน้า / ตัวรุก
-  { id: 1, name: "Petch", number: 10, pos: "ST", ovr: 88, img: "", onPitch: true, x: 88, y: 50 },
-  { id: 2, name: "June", number: 11, pos: "LW", ovr: 82, img: "", onPitch: true, x: 78, y: 22 },
-  { id: 4, name: "CHARLIE", number: 17, pos: "RW", ovr: 81, img: "", onPitch: true, x: 78, y: 78 },
-  { id: 8, name: "Kit", number: 99, pos: "ST", ovr: 85, img: "", onPitch: true, x: 85, y: 35 },
-  { id: 13, name: "L.Pakin", number: 9, pos: "ST", ovr: 84, img: "", onPitch: true, x: 85, y: 65 },
-  { id: 22, name: "CHAWIN", number: 20, pos: "ST", ovr: 80, img: "", onPitch: true, x: 92, y: 20 },
-  { id: 26, name: "SUBSIN", number: 78, pos: "ST", ovr: 79, img: "", onPitch: true, x: 92, y: 80 },
+  // กองหน้า / ตัวรุก (ด้านบนสุด Y: 10 - 25)
+  { id: 1, name: "Petch", number: 10, pos: "ST", ovr: 88, img: "", onPitch: true, x: 50, y: 12 },
+  { id: 2, name: "June", number: 11, pos: "LW", ovr: 82, img: "", onPitch: true, x: 22, y: 18 },
+  { id: 4, name: "CHARLIE", number: 17, pos: "RW", ovr: 81, img: "", onPitch: true, x: 78, y: 18 },
+  { id: 8, name: "Kit", number: 99, pos: "ST", ovr: 85, img: "", onPitch: true, x: 35, y: 12 },
+  { id: 13, name: "L.Pakin", number: 9, pos: "ST", ovr: 84, img: "", onPitch: true, x: 65, y: 12 },
+  { id: 22, name: "CHAWIN", number: 20, pos: "ST", ovr: 80, img: "", onPitch: true, x: 12, y: 8 },
+  { id: 26, name: "SUBSIN", number: 78, pos: "ST", ovr: 79, img: "", onPitch: true, x: 88, y: 8 },
 
-  // โซนกองกลาง / ตัวทำเกม
-  { id: 3, name: "CENTER", number: 8, pos: "CM", ovr: 80, img: "", onPitch: true, x: 55, y: 50 },
-  { id: 5, name: "kxngpr", number: 13, pos: "CAM", ovr: 83, img: "", onPitch: true, x: 68, y: 50 },
-  { id: 9, name: "Superdoopernet", number: 19, pos: "CM", ovr: 78, img: "", onPitch: true, x: 55, y: 30 },
-  { id: 10, name: "Tharapon", number: 7, pos: "RW", ovr: 80, img: "", onPitch: true, x: 68, y: 80 },
-  { id: 12, name: "PEE", number: 14, pos: "CM", ovr: 76, img: "", onPitch: true, x: 55, y: 70 },
-  { id: 16, name: "ISAWA", number: 88, pos: "CAM", ovr: 81, img: "", onPitch: true, x: 68, y: 20 },
-  { id: 18, name: "Aekthanick", number: 18, pos: "CM", ovr: 79, img: "", onPitch: true, x: 45, y: 40 },
-  { id: 19, name: "Phoneza", number: 15, pos: "LW", ovr: 78, img: "", onPitch: true, x: 68, y: 35 },
-  { id: 21, name: "3ABYOIL", number: 54, pos: "CM", ovr: 75, img: "", onPitch: true, x: 45, y: 60 },
-  { id: 24, name: "THW SRL", number: 50, pos: "CAM", ovr: 79, img: "", onPitch: true, x: 68, y: 65 },
+  // กองกลาง / ตัวรุกตรงกลาง (Y: 30 - 55)
+  { id: 5, name: "kxngpr", number: 13, pos: "CAM", ovr: 83, img: "", onPitch: true, x: 50, y: 30 },
+  { id: 16, name: "ISAWA", number: 88, pos: "CAM", ovr: 81, img: "", onPitch: true, x: 20, y: 32 },
+  { id: 10, name: "Tharapon", number: 7, pos: "RW", ovr: 80, img: "", onPitch: true, x: 80, y: 32 },
+  { id: 19, name: "Phoneza", number: 15, pos: "LW", ovr: 78, img: "", onPitch: true, x: 35, y: 32 },
+  { id: 24, name: "THW SRL", number: 50, pos: "CAM", ovr: 79, img: "", onPitch: true, x: 65, y: 32 },
+  { id: 3, name: "CENTER", number: 8, pos: "CM", ovr: 80, img: "", onPitch: true, x: 50, y: 45 },
+  { id: 9, name: "Superdoopernet", number: 19, pos: "CM", ovr: 78, img: "", onPitch: true, x: 30, y: 45 },
+  { id: 12, name: "PEE", number: 14, pos: "CM", ovr: 76, img: "", onPitch: true, x: 70, y: 45 },
+  { id: 18, name: "Aekthanick", number: 18, pos: "CM", ovr: 79, img: "", onPitch: true, x: 40, y: 55 },
+  { id: 21, name: "3ABYOIL", number: 54, pos: "CM", ovr: 75, img: "", onPitch: true, x: 60, y: 55 },
 
-  // โซนกองหลัง
-  { id: 7, name: "DISZAA", number: 4, pos: "CB", ovr: 79, img: "", onPitch: true, x: 30, y: 50 },
-  { id: 11, name: "Chanachoke S.", number: 22, pos: "CB", ovr: 77, img: "", onPitch: true, x: 30, y: 30 },
-  { id: 14, name: "FAH", number: 26, pos: "LB", ovr: 76, img: "", onPitch: true, x: 32, y: 15 },
-  { id: 15, name: "PHURIPHAT", number: 5, pos: "CB", ovr: 78, img: "", onPitch: true, x: 30, y: 70 },
-  { id: 17, name: "NAPATSIT", number: 25, pos: "RB", ovr: 77, img: "", onPitch: true, x: 32, y: 85 },
-  { id: 20, name: "Thanthiti", number: 23, pos: "CB", ovr: 76, img: "", onPitch: true, x: 22, y: 38 },
-  { id: 23, name: "Tanawat", number: 6, pos: "CB", ovr: 77, img: "", onPitch: true, x: 22, y: 62 },
-  { id: 25, name: "S. Mahatthanapaisan", number: 101, pos: "CB", ovr: 82, img: "", onPitch: true, x: 20, y: 50 },
+  // กองหลัง (Y: 65 - 82)
+  { id: 7, name: "DISZAA", number: 4, pos: "CB", ovr: 79, img: "", onPitch: true, x: 50, y: 70 },
+  { id: 11, name: "Chanachoke S.", number: 22, pos: "CB", ovr: 77, img: "", onPitch: true, x: 30, y: 70 },
+  { id: 15, name: "PHURIPHAT", number: 5, pos: "CB", ovr: 78, img: "", onPitch: true, x: 70, y: 70 },
+  { id: 14, name: "FAH", number: 26, pos: "LB", ovr: 76, img: "", onPitch: true, x: 15, y: 68 },
+  { id: 17, name: "NAPATSIT", number: 25, pos: "RB", ovr: 77, img: "", onPitch: true, x: 85, y: 68 },
+  { id: 20, name: "Thanthiti", number: 23, pos: "CB", ovr: 76, img: "", onPitch: true, x: 38, y: 78 },
+  { id: 23, name: "Tanawat", number: 6, pos: "CB", ovr: 77, img: "", onPitch: true, x: 62, y: 78 },
+  { id: 25, name: "S. Mahatthanapaisan", number: 101, pos: "CB", ovr: 82, img: "", onPitch: true, x: 50, y: 82 },
 
-  // โกล
-  { id: 6, name: "Chidsanucha", number: 1, pos: "GK", ovr: 82, img: "", onPitch: true, x: 8, y: 50 }
+  // ผู้รักษาประตู (ด้านล่างสุด Y: 92)
+  { id: 6, name: "Chidsanucha", number: 1, pos: "GK", ovr: 82, img: "", onPitch: true, x: 50, y: 92 }
 ];
 
-let players = JSON.parse(localStorage.getItem("pitch_players") || "null") || defaultPlayers;
+let players = JSON.parse(localStorage.getItem("pitch_players_v") || "null") || defaultPlayers;
 let selectedPlayer = null;
 let photoData = "";
 let maxLimit = 26;
@@ -693,10 +707,10 @@ function updateLimit() {
   render();
 }
 
-function saveLocal() { localStorage.setItem("pitch_players", JSON.stringify(players)); }
+function saveLocal() { localStorage.setItem("pitch_players_v", JSON.stringify(players)); }
 function saveTeamSheet() { saveLocal(); showToast("บันทึกแผนทีมเรียบร้อยแล้ว!"); }
 function resetDefault() {
-  if (confirm("ต้องการรีเซ็ตข้อมูลนักเตะกลับเป็นตำแหน่งเดิมทั้งหมด?")) {
+  if (confirm("ต้องการรีเซ็ตตำแหน่งนักเตะกลับเป็นแนวตั้งเดิม?")) {
     players = defaultPlayers.map(x => ({...x}));
     saveLocal();
     render();
