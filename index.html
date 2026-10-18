@@ -342,12 +342,12 @@ input:focus, select:focus { border-color: var(--accent); }
           <div class="panelhead">
             <h2>สนามแข่งขัน (ลากวางอิสระ)</h2>
             <div style="display:flex; align-items:center; gap:8px;">
-              <span class="sub">จำนวนคน:</span>
+              <span class="sub">โควตาสนาม:</span>
               <select id="squadLimit" onchange="updateLimit()" style="width: auto; padding: 4px 8px;">
                 <option value="5">5 คน</option>
-                <option value="7" selected>7 คน</option>
-                <option value="9">9 คน</option>
+                <option value="7">7 คน</option>
                 <option value="11">11 คน</option>
+                <option value="26" selected>ทั้งหมด (26 คน)</option>
               </select>
             </div>
           </div>
@@ -365,7 +365,7 @@ input:focus, select:focus { border-color: var(--accent); }
             <div class="roster-dock" ondragover="allowDrop(event)" ondrop="handleDropOnDock(event)">
               <div class="dock-title">
                 <span>ขุมกำลังสำรอง (ลากลงสนามเพื่อจัดตัว)</span>
-                <span id="onPitchCount">บนสนาม: 0 / 7</span>
+                <span id="onPitchCount">บนสนาม: 0 / 26</span>
               </div>
               <div class="dock-list" id="dockList"></div>
             </div>
@@ -417,38 +417,45 @@ input:focus, select:focus { border-color: var(--accent); }
 
 <script>
 const defaultPlayers = [
-  { id: 1, name: "Petch", number: 10, pos: "ST", ovr: 88, img: "", onPitch: true, x: 86, y: 50 },
-  { id: 2, name: "June", number: 11, pos: "LW", ovr: 82, img: "", onPitch: true, x: 70, y: 25 },
-  { id: 3, name: "CENTER", number: 8, pos: "CM", ovr: 80, img: "", onPitch: true, x: 52, y: 50 },
-  { id: 4, name: "CHARLIE", number: 17, pos: "RW", ovr: 81, img: "", onPitch: true, x: 70, y: 75 },
+  // โซนกองหน้า / ตัวรุก
+  { id: 1, name: "Petch", number: 10, pos: "ST", ovr: 88, img: "", onPitch: true, x: 88, y: 50 },
+  { id: 2, name: "June", number: 11, pos: "LW", ovr: 82, img: "", onPitch: true, x: 78, y: 22 },
+  { id: 4, name: "CHARLIE", number: 17, pos: "RW", ovr: 81, img: "", onPitch: true, x: 78, y: 78 },
+  { id: 8, name: "Kit", number: 99, pos: "ST", ovr: 85, img: "", onPitch: true, x: 85, y: 35 },
+  { id: 13, name: "L.Pakin", number: 9, pos: "ST", ovr: 84, img: "", onPitch: true, x: 85, y: 65 },
+  { id: 22, name: "CHAWIN", number: 20, pos: "ST", ovr: 80, img: "", onPitch: true, x: 92, y: 20 },
+  { id: 26, name: "SUBSIN", number: 78, pos: "ST", ovr: 79, img: "", onPitch: true, x: 92, y: 80 },
+
+  // โซนกองกลาง / ตัวทำเกม
+  { id: 3, name: "CENTER", number: 8, pos: "CM", ovr: 80, img: "", onPitch: true, x: 55, y: 50 },
   { id: 5, name: "kxngpr", number: 13, pos: "CAM", ovr: 83, img: "", onPitch: true, x: 68, y: 50 },
-  { id: 6, name: "Chidsanucha", number: 1, pos: "GK", ovr: 82, img: "", onPitch: true, x: 12, y: 50 },
-  { id: 7, name: "DISZAA", number: 4, pos: "CB", ovr: 79, img: "", onPitch: true, x: 32, y: 50 },
-  { id: 8, name: "Kit", number: 99, pos: "ST", ovr: 85, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 9, name: "Superdoopernet", number: 19, pos: "CM", ovr: 78, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 10, name: "Tharapon", number: 7, pos: "RW", ovr: 80, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 11, name: "Chanachoke S.", number: 22, pos: "CB", ovr: 77, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 12, name: "PEE", number: 14, pos: "CM", ovr: 76, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 13, name: "L.Pakin", number: 9, pos: "ST", ovr: 84, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 14, name: "FAH", number: 26, pos: "LB", ovr: 76, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 15, name: "PHURIPHAT", number: 5, pos: "CB", ovr: 78, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 16, name: "ISAWA", number: 88, pos: "CAM", ovr: 81, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 17, name: "NAPATSIT", number: 25, pos: "RB", ovr: 77, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 18, name: "Aekthanick", number: 18, pos: "CM", ovr: 79, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 19, name: "Phoneza", number: 15, pos: "LW", ovr: 78, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 20, name: "Thanthiti", number: 23, pos: "CB", ovr: 76, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 21, name: "3ABYOIL", number: 54, pos: "CM", ovr: 75, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 22, name: "CHAWIN", number: 20, pos: "ST", ovr: 80, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 23, name: "Tanawat", number: 6, pos: "CB", ovr: 77, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 24, name: "THW SRL", number: 50, pos: "CAM", ovr: 79, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 25, name: "S. Mahatthanapaisan", number: 101, pos: "CB", ovr: 82, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 26, name: "SUBSIN", number: 78, pos: "ST", ovr: 79, img: "", onPitch: false, x: 0, y: 0 }
+  { id: 9, name: "Superdoopernet", number: 19, pos: "CM", ovr: 78, img: "", onPitch: true, x: 55, y: 30 },
+  { id: 10, name: "Tharapon", number: 7, pos: "RW", ovr: 80, img: "", onPitch: true, x: 68, y: 80 },
+  { id: 12, name: "PEE", number: 14, pos: "CM", ovr: 76, img: "", onPitch: true, x: 55, y: 70 },
+  { id: 16, name: "ISAWA", number: 88, pos: "CAM", ovr: 81, img: "", onPitch: true, x: 68, y: 20 },
+  { id: 18, name: "Aekthanick", number: 18, pos: "CM", ovr: 79, img: "", onPitch: true, x: 45, y: 40 },
+  { id: 19, name: "Phoneza", number: 15, pos: "LW", ovr: 78, img: "", onPitch: true, x: 68, y: 35 },
+  { id: 21, name: "3ABYOIL", number: 54, pos: "CM", ovr: 75, img: "", onPitch: true, x: 45, y: 60 },
+  { id: 24, name: "THW SRL", number: 50, pos: "CAM", ovr: 79, img: "", onPitch: true, x: 68, y: 65 },
+
+  // โซนกองหลัง
+  { id: 7, name: "DISZAA", number: 4, pos: "CB", ovr: 79, img: "", onPitch: true, x: 30, y: 50 },
+  { id: 11, name: "Chanachoke S.", number: 22, pos: "CB", ovr: 77, img: "", onPitch: true, x: 30, y: 30 },
+  { id: 14, name: "FAH", number: 26, pos: "LB", ovr: 76, img: "", onPitch: true, x: 32, y: 15 },
+  { id: 15, name: "PHURIPHAT", number: 5, pos: "CB", ovr: 78, img: "", onPitch: true, x: 30, y: 70 },
+  { id: 17, name: "NAPATSIT", number: 25, pos: "RB", ovr: 77, img: "", onPitch: true, x: 32, y: 85 },
+  { id: 20, name: "Thanthiti", number: 23, pos: "CB", ovr: 76, img: "", onPitch: true, x: 22, y: 38 },
+  { id: 23, name: "Tanawat", number: 6, pos: "CB", ovr: 77, img: "", onPitch: true, x: 22, y: 62 },
+  { id: 25, name: "S. Mahatthanapaisan", number: 101, pos: "CB", ovr: 82, img: "", onPitch: true, x: 20, y: 50 },
+
+  // โกล
+  { id: 6, name: "Chidsanucha", number: 1, pos: "GK", ovr: 82, img: "", onPitch: true, x: 8, y: 50 }
 ];
 
 let players = JSON.parse(localStorage.getItem("pitch_players") || "null") || defaultPlayers;
 let selectedPlayer = null;
 let photoData = "";
-let maxLimit = 7;
+let maxLimit = 26;
 
 function getAvatar(p) {
   return p.img || "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="#0f2438"/><circle cx="50" cy="40" r="22" fill="#8da5b8"/><path d="M18 98c3-27 61-27 64 0" fill="#1b3854"/></svg>`);
@@ -545,7 +552,7 @@ function renderStats() {
     </div>
     <div class="stat-item">
       <span>โควตาทีม</span>
-      <div class="bar"><i style="width:${(pitchPlayers.length / maxLimit) * 100}%"></i></div>
+      <div class="bar"><i style="width:${Math.min(100, (pitchPlayers.length / maxLimit) * 100)}%"></i></div>
       <b>${pitchPlayers.length}/${maxLimit}</b>
     </div>
   `;
@@ -625,7 +632,7 @@ function handleFormSubmit(e) {
       id: Date.now(),
       name, number, pos, ovr,
       img: photoData,
-      onPitch: false, x: 50, y: 50
+      onPitch: true, x: 50, y: 50
     });
     showToast("เพิ่มนักเตะใหม่แล้ว");
   }
@@ -689,7 +696,7 @@ function updateLimit() {
 function saveLocal() { localStorage.setItem("pitch_players", JSON.stringify(players)); }
 function saveTeamSheet() { saveLocal(); showToast("บันทึกแผนทีมเรียบร้อยแล้ว!"); }
 function resetDefault() {
-  if (confirm("ต้องการรีเซ็ตข้อมูลนักเตะกลับเป็นรายชื่อเดิมทั้งหมด?")) {
+  if (confirm("ต้องการรีเซ็ตข้อมูลนักเตะกลับเป็นตำแหน่งเดิมทั้งหมด?")) {
     players = defaultPlayers.map(x => ({...x}));
     saveLocal();
     render();
