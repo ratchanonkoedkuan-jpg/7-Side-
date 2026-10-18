@@ -3,236 +3,689 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>7-A-Side Team Manager</title>
+<title>Ultimate Team Manager - Pitch Builder</title>
 <style>
-:root{--bg:#07111b;--panel:#0d1b28;--panel2:#102333;--line:#1d3548;--text:#eef7ff;--muted:#8da5b8;--accent:#35e58a;--danger:#ff5c67}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,#102538 0,#07111b 42%,#050b11 100%);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-button,input,select{font:inherit}button{cursor:pointer}
-.app{min-height:100vh;display:grid;grid-template-columns:220px 1fr}
-aside{border-right:1px solid var(--line);background:#08141f;padding:22px 14px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;margin-bottom:30px}.ball{width:34px;height:34px;border-radius:10px;background:var(--accent);color:#06120c;display:grid;place-items:center;font-weight:900}
-.nav button{width:100%;border:0;background:transparent;color:var(--muted);padding:13px 14px;text-align:left;border-radius:10px;margin:3px 0}.nav button.active,.nav button:hover{background:#112536;color:#fff}
-main{padding:20px;max-width:1500px;width:100%;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.top h1{margin:0;font-size:25px}.sub{color:var(--muted);font-size:13px}.actions{display:flex;gap:8px}.btn{border:1px solid var(--line);background:#102333;color:#fff;border-radius:9px;padding:10px 14px}.btn.primary{background:var(--accent);color:#06120c;border-color:var(--accent);font-weight:800}
-.grid{display:grid;grid-template-columns:minmax(480px,1.5fr) minmax(300px,.8fr);gap:16px}.panel{background:linear-gradient(180deg,#0d1b28,#0a1722);border:1px solid var(--line);border-radius:15px;overflow:hidden}.panelhead{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.panelhead h2{font-size:15px;margin:0}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;color:var(--muted)}input,select{width:100%;background:#08141f;border:1px solid var(--line);border-radius:8px;color:#fff;padding:10px;outline:none}input:focus,select:focus{border-color:var(--accent)}
-.pitch{position:relative;margin:16px;aspect-ratio:1.45/1;border-radius:12px;overflow:hidden;background:linear-gradient(90deg,rgba(255,255,255,.025) 50%,transparent 50%),repeating-linear-gradient(90deg,#164a2b 0,#164a2b 10%,#195331 10%,#195331 20%);border:2px solid rgba(255,255,255,.22)}
-.pitch:before{content:"";position:absolute;inset:5%;border:2px solid rgba(255,255,255,.6);border-radius:3px}.pitch:after{content:"";position:absolute;left:5%;right:5%;top:50%;border-top:2px solid rgba(255,255,255,.6);box-shadow:0 0 0 999px transparent}
-.center{position:absolute;left:50%;top:50%;width:18%;aspect-ratio:1;border:2px solid rgba(255,255,255,.6);border-radius:50%;transform:translate(-50%,-50%)}
-.player{position:absolute;transform:translate(-50%,-50%);width:92px;text-align:center;user-select:none;cursor:grab;z-index:5}.player:active{cursor:grabbing}.avatar{width:55px;height:55px;margin:auto;border-radius:50%;border:2px solid var(--accent);background:#13293a;object-fit:cover}.pcard{margin-top:-2px;background:rgba(4,13,20,.92);border:1px solid #27455a;border-radius:7px;padding:4px 5px}.pcard b{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pcard small{color:var(--accent);font-weight:800}.remove{position:absolute;right:2px;top:-3px;width:18px;height:18px;border-radius:50%;border:0;background:var(--danger);color:#fff;font-size:11px;display:none}.player:hover .remove{display:block}
-.side{display:flex;flex-direction:column;gap:16px}.form{padding:16px;display:grid;gap:11px}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.photo{height:100px;border:1px dashed #345269;border-radius:10px;display:grid;place-items:center;color:var(--muted);overflow:hidden}.photo img{width:100%;height:100%;object-fit:cover}
-.roster{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:12px}.mini{background:#0a1722;border:1px solid var(--line);border-radius:9px;padding:9px;display:flex;align-items:center;gap:8px;cursor:pointer}.mini img{width:40px;height:40px;border-radius:50%;object-fit:cover}.mini b{font-size:12px}.mini small{color:var(--muted);display:block}
-.bottom{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px}.bench{padding:12px;display:flex;gap:9px;flex-wrap:wrap}.bench .mini{min-width:150px}.stats{padding:14px}.stat{display:grid;grid-template-columns:85px 1fr 35px;gap:8px;align-items:center;margin:10px 0;font-size:12px}.bar{height:7px;border-radius:10px;background:#172c3c;overflow:hidden}.bar i{display:block;height:100%;background:var(--accent)}
-.empty{text-align:center;color:var(--muted);padding:30px}
-.toast{position:fixed;right:18px;bottom:18px;background:#102333;border:1px solid var(--line);padding:12px 15px;border-radius:10px;display:none}
-@media(max-width:900px){.app{grid-template-columns:1fr}aside{display:none}.grid,.bottom{grid-template-columns:1fr}main{padding:12px}.pitch{margin:8px}.player{width:75px}.avatar{width:45px;height:45px}.pcard b{font-size:9px}}
+:root {
+  --bg: #050b14;
+  --panel: rgba(13, 27, 42, 0.75);
+  --panel-border: rgba(53, 229, 138, 0.2);
+  --line: #1e3a52;
+  --text: #f0f8ff;
+  --muted: #8da5b8;
+  --accent: #35e58a;
+  --accent-glow: rgba(53, 229, 138, 0.4);
+  --danger: #ff4757;
+  --gold: #ffd700;
+  --silver: #c0c0c0;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: radial-gradient(circle at 50% 0%, #0d2338 0%, #050b14 70%);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+
+.app {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+
+/* Sidebar Navigation */
+aside {
+  border-right: 1px solid var(--line);
+  background: rgba(6, 15, 25, 0.9);
+  padding: 24px 16px;
+  backdrop-filter: blur(10px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 900;
+  font-size: 19px;
+  margin-bottom: 32px;
+  letter-spacing: 0.5px;
+}
+.ball {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), #00b359);
+  color: #050b14;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.nav button {
+  width: 100%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  padding: 12px 14px;
+  text-align: left;
+  border-radius: 10px;
+  margin: 4px 0;
+  transition: all 0.2s;
+}
+.nav button.active, .nav button:hover {
+  background: rgba(53, 229, 138, 0.1);
+  border-color: var(--panel-border);
+  color: #fff;
+  transform: translateX(4px);
+}
+
+/* Main Layout */
+main {
+  padding: 24px;
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.top h1 { margin: 0; font-size: 28px; font-weight: 800; background: linear-gradient(90deg, #fff, var(--muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+.actions { display: flex; gap: 10px; }
+.btn {
+  border: 1px solid var(--line);
+  background: rgba(16, 35, 51, 0.8);
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.btn:hover { background: #163248; border-color: var(--accent); }
+.btn.primary {
+  background: var(--accent);
+  color: #050b14;
+  border-color: var(--accent);
+  font-weight: 800;
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+.btn.primary:hover { transform: translateY(-2px); box-shadow: 0 0 25px var(--accent-glow); }
+
+/* Main Grid Layout */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.panelhead {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.02);
+}
+.panelhead h2 { font-size: 16px; margin: 0; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+/* Football Pitch Visual */
+.pitch-container { position: relative; padding: 20px; }
+.pitch {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.55 / 1;
+  border-radius: 16px;
+  overflow: hidden;
+  background: repeating-linear-gradient(90deg, #124024 0, #124024 8%, #154a2a 8%, #154a2a 16%);
+  border: 3px solid rgba(255,255,255,0.3);
+  box-shadow: inset 0 0 80px rgba(0,0,0,0.6);
+}
+
+.pitch-line { position: absolute; border: 2px solid rgba(255,255,255,0.5); pointer-events: none; }
+.pitch-outer { inset: 4%; border-radius: 4px; }
+.pitch-center-line { left: 50%; top: 4%; bottom: 4%; border-left: 2px solid rgba(255,255,255,0.5); }
+.pitch-center-circle { left: 50%; top: 50%; width: 16%; aspect-ratio: 1; border-radius: 50%; transform: translate(-50%, -50%); }
+.pitch-penalty-left { left: 4%; top: 25%; width: 16%; height: 50%; }
+.pitch-penalty-right { right: 4%; top: 25%; width: 16%; height: 50%; }
+
+/* Player Cards on Pitch */
+.pitch-player {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  text-align: center;
+  user-select: none;
+  cursor: grab;
+  z-index: 10;
+  transition: transform 0.1s ease, filter 0.2s;
+}
+.pitch-player:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.15); z-index: 100; }
+
+.player-card {
+  background: rgba(5, 14, 24, 0.92);
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6), 0 0 10px var(--accent-glow);
+  position: relative;
+}
+.player-card.gold { border-color: var(--gold); box-shadow: 0 0 12px rgba(255,215,0,0.4); }
+.player-card.silver { border-color: var(--silver); box-shadow: 0 0 12px rgba(192,192,192,0.3); }
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.2);
+  display: block;
+}
+
+.pinfo b { display: block; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px; }
+.pinfo small { color: var(--accent); font-weight: 800; font-size: 10px; }
+
+.remove-btn {
+  position: absolute;
+  top: -6px; right: -6px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: var(--danger);
+  color: #fff;
+  font-size: 12px;
+  display: none;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+.pitch-player:hover .remove-btn { display: grid; }
+
+/* Bench / Roster Dock */
+.roster-dock {
+  margin-top: 16px;
+  background: rgba(5, 11, 20, 0.8);
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 100px;
+}
+.dock-title { font-size: 12px; color: var(--muted); margin-bottom: 10px; display: flex; justify-content: space-between; }
+.dock-list { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; }
+
+.dock-card {
+  min-width: 120px;
+  background: #0c1a28;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: grab;
+  transition: all 0.2s;
+  user-select: none;
+}
+.dock-card:hover { border-color: var(--accent); transform: translateY(-2px); background: #102336; }
+.dock-card img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+.dock-card b { font-size: 11px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dock-card small { color: var(--muted); font-size: 10px; }
+
+/* Form Styles */
+.form { padding: 18px; display: grid; gap: 12px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+input, select {
+  width: 100%;
+  background: #07131f;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: #fff;
+  padding: 10px;
+  outline: none;
+  transition: border 0.2s;
+}
+input:focus, select:focus { border-color: var(--accent); }
+
+.photo-upload {
+  height: 80px;
+  border: 2px dashed var(--line);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border 0.2s;
+}
+.photo-upload:hover { border-color: var(--accent); color: #fff; }
+.photo-upload img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Stats Bar */
+.stats { padding: 16px; }
+.stat-item { display: grid; grid-template-columns: 90px 1fr 40px; gap: 10px; align-items: center; margin: 12px 0; font-size: 12px; }
+.bar { height: 8px; border-radius: 10px; background: #0c1a28; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
+.bar i { display: block; height: 100%; background: linear-gradient(90deg, #00b359, var(--accent)); box-shadow: 0 0 10px var(--accent-glow); transition: width 0.3s; }
+
+.toast {
+  position: fixed;
+  right: 20px; bottom: 20px;
+  background: #0d2338;
+  border: 1px solid var(--accent);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  display: none;
+  z-index: 1000;
+}
+
+@media(max-width: 1024px) {
+  .app { grid-template-columns: 1fr; }
+  aside { display: none; }
+  .grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
+
 <div class="app">
-<aside><div class="brand"><div class="ball">7</div> 7-A-SIDE MANAGER</div>
-<div class="nav"><button class="active">⚽ จัดทีม</button><button onclick="scrollToSection('tactics')">♟ แท็กติก</button><button onclick="scrollToSection('roster')">👥 นักเตะ</button><button onclick="saveTeam()">💾 บันทึกทีม</button></div></aside>
-<main>
-<div class="top"><div><h1>Team Management</h1><div class="sub">ระบบจัดตัวฟุตบอล 7 คนสำหรับโค้ช</div></div><div class="actions"><button class="btn" onclick="resetTeam()">รีเซ็ต</button><button class="btn primary" onclick="saveTeam()">บันทึก Team Sheet</button></div></div>
-<div class="grid">
-<section class="panel"><div class="panelhead"><h2>สนามแข่งขัน · 7 คน</h2><select id="formation" onchange="changeFormation()"><option>2-3-1</option><option>3-2-1</option><option>2-2-2</option><option>3-1-2</option></select></div><div class="pitch" id="pitch"><div class="center"></div></div></section>
-<div class="side">
-<section class="panel" id="editor"><div class="panelhead"><h2 id="formTitle">เพิ่ม / แก้ไขนักเตะ</h2></div>
-<form class="form" onsubmit="addPlayer(event)">
-<div class="photo" id="photoBox">เลือกรูปนักเตะ</div>
-<input id="photo" type="file" accept="image/*" style="display:none" onchange="preview(event)">
-<button type="button" class="btn" onclick="document.getElementById('photo').click()">📷 เพิ่มรูป</button>
-<div class="two"><div class="field"><label>ชื่อ / ชื่อเล่น</label><input id="name" required placeholder="เช่น Pong"></div><div class="field"><label>เบอร์เสื้อ</label><input id="number" type="number" min="1" max="99" value="7" required></div></div>
-<div class="two"><div class="field"><label>ตำแหน่ง</label><select id="pos"><option>GK</option><option>CB</option><option>LB</option><option>RB</option><option>CM</option><option>CAM</option><option>LW</option><option>RW</option><option>ST</option></select></div><div class="field"><label>Overall</label><input id="ovr" type="number" min="1" max="99" value="75" required></div></div>
-<div class="two"><div class="field"><label>เท้าที่ถนัด</label><select id="foot"><option>Right</option><option>Left</option></select></div><div class="field"><label>บทบาท</label><select id="role"><option>Defender</option><option>Playmaker</option><option>Box-to-Box</option><option>Winger</option><option>Target Man</option><option>Goalkeeper</option></select></div></div>
-<button class="btn primary" type="submit" id="submitBtn">＋ เพิ่มนักเตะเข้าทีม</button>
-<button class="btn" type="button" id="cancelBtn" onclick="clearForm()" style="display:none; background:var(--danger); border-color:var(--danger); color:#fff;">ยกเลิกแก้ไข</button>
-</form></section>
-<section class="panel" id="roster"><div class="panelhead"><h2>นักเตะในทีม</h2><span id="count" class="sub">0 คน</span></div><div class="roster" id="rosterList"></div></section>
-</div></div>
-<div class="bottom">
-<section class="panel"><div class="panelhead"><h2>ตัวสำรอง</h2><span class="sub">เลือกนักเตะเพื่อเปลี่ยนตัว</span></div><div class="bench" id="bench"></div></section>
-<section class="panel" id="tactics"><div class="panelhead"><h2>ค่าสเตตัสทีม</h2><span class="sub">ภาพรวมผู้เล่นที่เลือก</span></div><div class="stats" id="stats"></div></section>
+  <aside>
+    <div class="brand"><div class="ball">⚽</div> PITCH BUILDER</div>
+    <div class="nav">
+      <button class="active">⚽ จัดทีมอิสระ</button>
+      <button onclick="scrollToSec('editor')">➕ เพิ่มนักเตะ</button>
+      <button onclick="scrollToSec('statsPanel')">📊 สถิติทีม</button>
+      <button onclick="saveTeamSheet()">💾 บันทึกแผน</button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="top">
+      <div>
+        <h1>Free-Form Pitch Manager</h1>
+        <div class="sub">จัดตัวผู้เล่นแบบลากวางอิสระไร้ขีดจำกัด</div>
+      </div>
+      <div class="actions">
+        <button class="btn" onclick="clearPitch()">เคลียร์สนาม</button>
+        <button class="btn" onclick="resetDefault()">รีเซ็ตค่าเริ่มต้น</button>
+        <button class="btn primary" onclick="saveTeamSheet()">บันทึกแผนทีม</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Pitch Area -->
+      <div class="left-col">
+        <div class="panel">
+          <div class="panelhead">
+            <h2>สนามแข่งขัน (ลากวางอิสระ)</h2>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="sub">จำนวนคน:</span>
+              <select id="squadLimit" onchange="updateLimit()" style="width: auto; padding: 4px 8px;">
+                <option value="5">5 คน</option>
+                <option value="7" selected>7 คน</option>
+                <option value="9">9 คน</option>
+                <option value="11">11 คน</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pitch-container">
+            <div class="pitch" id="pitch" ondragover="allowDrop(event)" ondrop="handleDropOnPitch(event)">
+              <div class="pitch-line pitch-outer"></div>
+              <div class="pitch-line pitch-center-line"></div>
+              <div class="pitch-line pitch-center-circle"></div>
+              <div class="pitch-line pitch-penalty-left"></div>
+              <div class="pitch-line pitch-penalty-right"></div>
+            </div>
+
+            <!-- Bench / Roster Dock -->
+            <div class="roster-dock" ondragover="allowDrop(event)" ondrop="handleDropOnDock(event)">
+              <div class="dock-title">
+                <span>ขุมกำลังสำรอง (ลากลงสนามเพื่อจัดตัว)</span>
+                <span id="onPitchCount">บนสนาม: 0 / 7</span>
+              </div>
+              <div class="dock-list" id="dockList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Side Column (Editor & Stats) -->
+      <div class="side-col" style="display:flex; flex-direction:column; gap:20px;">
+        <div class="panel" id="editor">
+          <div class="panelhead"><h2 id="formTitle">เพิ่ม / แก้ไขนักเตะ</h2></div>
+          <form class="form" onsubmit="handleFormSubmit(event)">
+            <div class="photo-upload" onclick="document.getElementById('photoInput').click()" id="photoBox">
+              📷 คลิกเพื่ออัปโหลดรูปภาพ
+            </div>
+            <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(event)">
+
+            <div class="two">
+              <div class="field"><label>ชื่อ / ชื่อเล่น</label><input id="name" required placeholder="เช่น Messi"></div>
+              <div class="field"><label>เบอร์เสื้อ</label><input id="number" type="number" min="1" max="99" value="10" required></div>
+            </div>
+
+            <div class="two">
+              <div class="field">
+                <label>ตำแหน่ง</label>
+                <select id="pos">
+                  <option>GK</option><option>CB</option><option>LB</option><option>RB</option>
+                  <option>CM</option><option>CAM</option><option>LW</option><option>RW</option><option>ST</option>
+                </select>
+              </div>
+              <div class="field"><label>Overall (OVR)</label><input id="ovr" type="number" min="1" max="99" value="85" required></div>
+            </div>
+
+            <button type="submit" class="btn primary" id="submitBtn">＋ เพิ่มนักเตะเข้าทีม</button>
+            <button type="button" class="btn" id="cancelBtn" onclick="resetForm()" style="display:none; background:var(--danger); border-color:var(--danger);">ยกเลิกแก้ไข</button>
+          </form>
+        </div>
+
+        <div class="panel" id="statsPanel">
+          <div class="panelhead"><h2>ค่าสเตตัสทีมจริง</h2></div>
+          <div class="stats" id="statsBox"></div>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>
-</main></div><div class="toast" id="toast"></div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-const defaultPlayers=[
-{id:1,name:"Noppon",number:1,pos:"GK",ovr:78,foot:"Right",role:"Goalkeeper",img:""},
-{id:2,name:"Kawin",number:2,pos:"RB",ovr:76,foot:"Right",role:"Defender",img:""},
-{id:3,name:"Sittichai",number:3,pos:"LB",ovr:75,foot:"Left",role:"Defender",img:""},
-{id:4,name:"Jirawat",number:4,pos:"CB",ovr:77,foot:"Right",role:"Defender",img:""},
-{id:5,name:"Phudit",number:5,pos:"CB",ovr:76,foot:"Right",role:"Defender",img:""},
-{id:6,name:"Saran",number:6,pos:"CM",ovr:74,foot:"Right",role:"Box-to-Box",img:""},
-{id:7,name:"Thanakorn",number:7,pos:"RW",ovr:74,foot:"Right",role:"Winger",img:""},
-{id:8,name:"Teerapat",number:8,pos:"CM",ovr:73,foot:"Left",role:"Playmaker",img:""},
-{id:9,name:"Pong",number:9,pos:"ST",ovr:83,foot:"Right",role:"Target Man",img:""},
-{id:10,name:"Kritsada",number:10,pos:"CAM",ovr:78,foot:"Right",role:"Playmaker",img:""},
-{id:11,name:"Nattapong",number:11,pos:"LW",ovr:76,foot:"Left",role:"Winger",img:""}
+const defaultPlayers = [
+  { id: 1, name: "Noppon", number: 1, pos: "GK", ovr: 82, img: "", onPitch: true, x: 12, y: 50 },
+  { id: 2, name: "Jirawat", number: 4, pos: "CB", ovr: 78, img: "", onPitch: true, x: 30, y: 35 },
+  { id: 3, name: "Phudit", number: 5, pos: "CB", ovr: 79, img: "", onPitch: true, x: 30, y: 65 },
+  { id: 4, name: "Saran", number: 6, pos: "CM", ovr: 81, img: "", onPitch: true, x: 52, y: 50 },
+  { id: 5, name: "Teerapat", number: 8, pos: "CAM", ovr: 84, img: "", onPitch: true, x: 70, y: 30 },
+  { id: 6, name: "Thanakorn", number: 7, pos: "RW", ovr: 80, img: "", onPitch: true, x: 70, y: 70 },
+  { id: 7, name: "Pong", number: 9, pos: "ST", ovr: 88, img: "", onPitch: true, x: 86, y: 50 },
+  { id: 8, name: "Kawin", number: 2, pos: "RB", ovr: 75, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 9, name: "Kritsada", number: 10, pos: "CAM", ovr: 83, img: "", onPitch: false, x: 0, y: 0 }
 ];
-let players=JSON.parse(localStorage.getItem("sevenSidePlayers")||"null")||defaultPlayers;
-let photoData="";
-let formation="2-3-1";
-let selected=null;
 
-const positions={
-"2-3-1":[["GK",50,88],["CB",35,68],["CB",65,68],["CM",22,49],["CM",50,51],["CM",78,49],["ST",50,20]],
-"3-2-1":[["GK",50,88],["CB",25,66],["CB",50,69],["CB",75,66],["CM",35,48],["CM",65,48],["ST",50,20]],
-"2-2-2":[["GK",50,88],["CB",34,68],["CB",66,68],["CM",34,48],["CM",66,48],["ST",34,22],["ST",66,22]],
-"3-1-2":[["GK",50,88],["CB",25,68],["CB",50,70],["CB",75,68],["CM",50,47],["ST",34,22],["ST",66,22]]
-};
+let players = JSON.parse(localStorage.getItem("pitch_players") || "null") || defaultPlayers;
+let selectedPlayer = null;
+let photoData = "";
+let maxLimit = 7;
 
-function avatar(p){return p.img||"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="#163047"/><circle cx="50" cy="40" r="22" fill="#b7c6d1"/><path d="M18 98c3-27 61-27 64 0" fill="#29475d"/></svg>`)}
+function getAvatar(p) {
+  return p.img || "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="#0f2438"/><circle cx="50" cy="40" r="22" fill="#8da5b8"/><path d="M18 98c3-27 61-27 64 0" fill="#1b3854"/></svg>`);
+}
 
-function render(){renderPitch();renderRoster();renderBench();renderStats();document.getElementById("count").textContent=players.length+" คน"}
-
-function renderPitch(){
-const pitch=document.getElementById("pitch"); 
-pitch.querySelectorAll(".player").forEach(x=>x.remove());
-const spots=positions[formation]; 
-const starters=players.slice(0,7);
-spots.forEach((s,i)=>{
-  const p=starters[i];if(!p)return;
-  const el=document.createElement("div");
-  el.className="player";
-  el.style.left=(p.x!=null?p.x:s[1])+"%";
-  el.style.top=(p.y!=null?p.y:s[2])+"%";
-  el.draggable=true;
-  el.innerHTML=`<button class="remove" onclick="event.stopPropagation();removePlayer(${p.id})">×</button><img class="avatar" src="${avatar(p)}"><div class="pcard"><b>${p.number} · ${p.name}</b><small>${p.pos} · ${p.ovr}</small></div>`;
-  el.ondragstart=e=>e.dataTransfer.setData("id",p.id);
-  el.onclick=()=>selectPlayer(p.id);
-  pitch.appendChild(el)
-})
-pitch.ondragover=e=>e.preventDefault();
-pitch.ondrop=e=>{
-  const id=+e.dataTransfer.getData("id");
-  const p=players.find(x=>x.id===id);
-  if(!p)return;
-  const rect=pitch.getBoundingClientRect();
-  const x=((e.clientX-rect.left)/rect.width)*100,y=((e.clientY-rect.top)/rect.height)*100;
-  p.x=x;p.y=y;
+function render() {
   renderPitch();
-  saveLocal()
+  renderDock();
+  renderStats();
 }
+
+function renderPitch() {
+  const pitch = document.getElementById("pitch");
+  pitch.querySelectorAll(".pitch-player").forEach(el => el.remove());
+
+  const pitchPlayers = players.filter(p => p.onPitch);
+  document.getElementById("onPitchCount").textContent = `บนสนาม: ${pitchPlayers.length} / ${maxLimit}`;
+
+  pitchPlayers.forEach(p => {
+    const cardClass = p.ovr >= 85 ? 'gold' : p.ovr >= 78 ? 'silver' : '';
+    const el = document.createElement("div");
+    el.className = "pitch-player";
+    el.style.left = p.x + "%";
+    el.style.top = p.y + "%";
+    el.draggable = true;
+
+    el.innerHTML = `
+      <div class="player-card ${cardClass}" onclick="editPlayer(${p.id})">
+        <button class="remove-btn" onclick="event.stopPropagation(); removeFromPitch(${p.id})">✕</button>
+        <img class="avatar" src="${getAvatar(p)}">
+        <div class="pinfo">
+          <b>${p.number}. ${p.name}</b>
+          <small>${p.pos} · ${p.ovr}</small>
+        </div>
+      </div>
+    `;
+
+    el.ondragstart = (e) => {
+      e.dataTransfer.setData("text/plain", JSON.stringify({ id: p.id, type: "move" }));
+    };
+
+    pitch.appendChild(el);
+  });
 }
 
-function renderRoster(){const box=document.getElementById("rosterList");box.innerHTML="";players.forEach(p=>{const el=document.createElement("div");el.className="mini";el.innerHTML=`<img src="${avatar(p)}"><div><b>${p.number} · ${p.name}</b><small>${p.pos} · OVR ${p.ovr}</small></div>`;el.onclick=()=>selectPlayer(p.id);box.appendChild(el)})}
+function renderDock() {
+  const dock = document.getElementById("dockList");
+  dock.innerHTML = "";
 
-function renderBench(){const box=document.getElementById("bench");box.innerHTML="";players.slice(7).forEach(p=>{const el=document.createElement("div");el.className="mini";el.innerHTML=`<img src="${avatar(p)}"><div><b>${p.number} · ${p.name}</b><small>${p.pos} · OVR ${p.ovr}</small></div>`;el.onclick=()=>selectPlayer(p.id);box.appendChild(el)});if(!players.slice(7).length)box.innerHTML='<div class="empty">เพิ่มนักเตะมากกว่า 7 คนเพื่อสร้างตัวสำรอง</div>'}
-
-function renderStats(){let s=document.getElementById("stats");if(!players.length){s.innerHTML="";return}let avg=Math.round(players.reduce((a,p)=>a+p.ovr,0)/players.length);s.innerHTML=`<div class="stat"><span>Overall</span><div class="bar"><i style="width:${avg}%"></i></div><b>${avg}</b></div><div class="stat"><span>จำนวน</span><div class="bar"><i style="width:${Math.min(players.length,14)/14*100}%"></i></div><b>${players.length}</b></div><div class="stat"><span>ตัวจริง</span><div class="bar"><i style="width:${Math.min(players.length,7)/7*100}%"></i></div><b>${Math.min(players.length,7)}/7</b></div>`}
-
-function addPlayer(e){
-  e.preventDefault();
-  
-  const nameVal = document.getElementById("name").value.trim();
-  const numberVal = +document.getElementById("number").value;
-  const posVal = document.getElementById("pos").value;
-  const ovrVal = +document.getElementById("ovr").value;
-  const footVal = document.getElementById("foot").value;
-  const roleVal = document.getElementById("role").value;
-
-  if(!nameVal) return;
-
-  if (selected) {
-    // อัปเดตข้อมูลผู้เล่นเดิม
-    selected.name = nameVal;
-    selected.number = numberVal;
-    selected.pos = posVal;
-    selected.ovr = ovrVal;
-    selected.foot = footVal;
-    selected.role = roleVal;
-    if(photoData) selected.img = photoData;
-    showToast("แก้ไขข้อมูลเรียบร้อยแล้ว");
-  } else {
-    // เพิ่มผู้เล่นใหม่
-    players.push({
-      id: Date.now(),
-      name: nameVal,
-      number: numberVal,
-      pos: posVal,
-      ovr: ovrVal,
-      foot: footVal,
-      role: roleVal,
-      img: photoData
-    });
-    showToast("เพิ่มนักเตะเรียบร้อยแล้ว");
+  const benchPlayers = players.filter(p => !p.onPitch);
+  if (benchPlayers.length === 0) {
+    dock.innerHTML = `<span style="color:var(--muted); font-size:12px;">นักเตะทุกคนอยู่บนสนามแล้ว</span>`;
+    return;
   }
 
-  clearForm();
+  benchPlayers.forEach(p => {
+    const el = document.createElement("div");
+    el.className = "dock-card";
+    el.draggable = true;
+    el.onclick = () => editPlayer(p.id);
+
+    el.innerHTML = `
+      <img src="${getAvatar(p)}">
+      <div>
+        <b>${p.number}. ${p.name}</b>
+        <small>${p.pos} · OVR ${p.ovr}</small>
+      </div>
+    `;
+
+    el.ondragstart = (e) => {
+      e.dataTransfer.setData("text/plain", JSON.stringify({ id: p.id, type: "add" }));
+    };
+
+    dock.appendChild(el);
+  });
+}
+
+function renderStats() {
+  const box = document.getElementById("statsBox");
+  const pitchPlayers = players.filter(p => p.onPitch);
+
+  if (!pitchPlayers.length) {
+    box.innerHTML = `<div style="text-align:center; color:var(--muted);">ยังไม่มีผู้เล่นบนสนาม</div>`;
+    return;
+  }
+
+  const avgOvr = Math.round(pitchPlayers.reduce((sum, p) => sum + p.ovr, 0) / pitchPlayers.length);
+  
+  box.innerHTML = `
+    <div class="stat-item">
+      <span>OVR เฉลี่ย</span>
+      <div class="bar"><i style="width:${avgOvr}%"></i></div>
+      <b>${avgOvr}</b>
+    </div>
+    <div class="stat-item">
+      <span>โควตาทีม</span>
+      <div class="bar"><i style="width:${(pitchPlayers.length / maxLimit) * 100}%"></i></div>
+      <b>${pitchPlayers.length}/${maxLimit}</b>
+    </div>
+  `;
+}
+
+/* Drag and Drop Logic */
+function allowDrop(e) { e.preventDefault(); }
+
+function handleDropOnPitch(e) {
+  e.preventDefault();
+  const data = JSON.parse(e.dataTransfer.getData("text/plain"));
+  const player = players.find(p => p.id === data.id);
+  if (!player) return;
+
+  const rect = document.getElementById("pitch").getBoundingClientRect();
+  const x = Math.max(5, Math.min(95, ((e.clientX - rect.left) / rect.width) * 100));
+  const y = Math.max(5, Math.min(95, ((e.clientY - rect.top) / rect.height) * 100));
+
+  const pitchPlayers = players.filter(p => p.onPitch);
+  if (!player.onPitch && pitchPlayers.length >= maxLimit) {
+    showToast(`นักเตะบนสนามเต็มแล้ว (${maxLimit} คน)`);
+    return;
+  }
+
+  player.onPitch = true;
+  player.x = Math.round(x);
+  player.y = Math.round(y);
+
   saveLocal();
   render();
 }
 
-function preview(e){
-  const f=e.target.files[0];
-  if(!f)return;
-  const r=new FileReader();
-  r.onload=()=>{
-    photoData=r.result;
-    document.getElementById("photoBox").innerHTML=`<img src="${photoData}">`;
-  };
-  r.readAsDataURL(f);
+function handleDropOnDock(e) {
+  e.preventDefault();
+  const data = JSON.parse(e.dataTransfer.getData("text/plain"));
+  const player = players.find(p => p.id === data.id);
+  if (player) {
+    player.onPitch = false;
+    saveLocal();
+    render();
+  }
 }
 
-function removePlayer(id){
-  players=players.filter(p=>p.id!==id);
-  if(selected && selected.id === id) clearForm();
+function removeFromPitch(id) {
+  const p = players.find(x => x.id === id);
+  if (p) {
+    p.onPitch = false;
+    saveLocal();
+    render();
+  }
+}
+
+function clearPitch() {
+  players.forEach(p => p.onPitch = false);
   saveLocal();
   render();
-  showToast("ลบนักเตะแล้ว");
+  showToast("ส่งนักเตะทุกคนกลับสำรองแล้ว");
 }
 
-function selectPlayer(id){
-  selected=players.find(p=>p.id===id);
-  if(!selected)return;
-  
-  document.getElementById("name").value=selected.name;
-  document.getElementById("number").value=selected.number;
-  document.getElementById("pos").value=selected.pos;
-  document.getElementById("ovr").value=selected.ovr;
-  document.getElementById("foot").value=selected.foot;
-  document.getElementById("role").value=selected.role;
-  
-  photoData=selected.img||"";
-  if(photoData) {
-    document.getElementById("photoBox").innerHTML=`<img src="${photoData}">`;
+/* Form Handlers */
+function handleFormSubmit(e) {
+  e.preventDefault();
+  const name = document.getElementById("name").value.trim();
+  const number = +document.getElementById("number").value;
+  const pos = document.getElementById("pos").value;
+  const ovr = +document.getElementById("ovr").value;
+
+  if (selectedPlayer) {
+    selectedPlayer.name = name;
+    selectedPlayer.number = number;
+    selectedPlayer.pos = pos;
+    selectedPlayer.ovr = ovr;
+    if (photoData) selectedPlayer.img = photoData;
+    showToast("อัปเดตข้อมูลนักเตะเรียบร้อย");
   } else {
-    document.getElementById("photoBox").innerHTML="เลือกรูปนักเตะ";
+    players.push({
+      id: Date.now(),
+      name, number, pos, ovr,
+      img: photoData,
+      onPitch: false, x: 50, y: 50
+    });
+    showToast("เพิ่มนักเตะใหม่แล้ว");
+  }
+
+  resetForm();
+  saveLocal();
+  render();
+}
+
+function handlePhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    photoData = reader.result;
+    document.getElementById("photoBox").innerHTML = `<img src="${photoData}">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function editPlayer(id) {
+  selectedPlayer = players.find(p => p.id === id);
+  if (!selectedPlayer) return;
+
+  document.getElementById("name").value = selectedPlayer.name;
+  document.getElementById("number").value = selectedPlayer.number;
+  document.getElementById("pos").value = selectedPlayer.pos;
+  document.getElementById("ovr").value = selectedPlayer.ovr;
+  
+  if (selectedPlayer.img) {
+    photoData = selectedPlayer.img;
+    document.getElementById("photoBox").innerHTML = `<img src="${photoData}">`;
+  } else {
+    photoData = "";
+    document.getElementById("photoBox").innerHTML = "📷 คลิกเพื่ออัปโหลดรูปภาพ";
   }
 
   document.getElementById("submitBtn").textContent = "✓ บันทึกการแก้ไข";
   document.getElementById("cancelBtn").style.display = "block";
-  document.getElementById("formTitle").textContent = "แก้ไขข้อมูลนักเตะ";
-  document.getElementById("editor").scrollIntoView({behavior:"smooth",block:"center"});
+  document.getElementById("formTitle").textContent = "แก้ไขนักเตะ";
 }
 
-function clearForm(){
-  selected = null;
+function resetForm() {
+  selectedPlayer = null;
   photoData = "";
   document.getElementById("name").value = "";
-  document.getElementById("number").value = 7;
-  document.getElementById("ovr").value = 75;
-  document.getElementById("pos").selectedIndex = 0;
-  document.getElementById("foot").selectedIndex = 0;
-  document.getElementById("role").selectedIndex = 0;
-  document.getElementById("photo").value = "";
-  document.getElementById("photoBox").innerHTML = "เลือกรูปนักเตะ";
-  
+  document.getElementById("number").value = 10;
+  document.getElementById("ovr").value = 85;
+  document.getElementById("photoInput").value = "";
+  document.getElementById("photoBox").innerHTML = "📷 คลิกเพื่ออัปโหลดรูปภาพ";
   document.getElementById("submitBtn").textContent = "＋ เพิ่มนักเตะเข้าทีม";
   document.getElementById("cancelBtn").style.display = "none";
   document.getElementById("formTitle").textContent = "เพิ่ม / แก้ไขนักเตะ";
 }
 
-function changeFormation(){
-  formation=document.getElementById("formation").value;
-  players.slice(0,7).forEach(p=>{p.x=null;p.y=null});
+function updateLimit() {
+  maxLimit = +document.getElementById("squadLimit").value;
   render();
 }
 
-function saveLocal(){localStorage.setItem("sevenSidePlayers",JSON.stringify(players))}
-function saveTeam(){saveLocal();showToast("บันทึก Team Sheet เรียบร้อย")}
-function resetTeam(){if(confirm("รีเซ็ตทีมกลับเป็นตัวอย่าง?")){players=defaultPlayers.map(x=>({...x}));clearForm();saveLocal();render()}}
-function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:"smooth"})}
-function showToast(t){const x=document.getElementById("toast");x.textContent=t;x.style.display="block";clearTimeout(window.tt);window.tt=setTimeout(()=>x.style.display="none",1800)}
+function saveLocal() { localStorage.setItem("pitch_players", JSON.stringify(players)); }
+function saveTeamSheet() { saveLocal(); showToast("บันทึกแผนทีมเรียบร้อยแล้ว!"); }
+function resetDefault() {
+  if (confirm("ต้องการรีเซ็ตข้อมูลทั้งหมดกลับเป็นค่าเริ่มต้น?")) {
+    players = defaultPlayers.map(x => ({...x}));
+    saveLocal();
+    render();
+  }
+}
+function scrollToSec(id) { document.getElementById(id).scrollIntoView({ behavior: "smooth" }); }
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.style.display = "block";
+  clearTimeout(window.tt);
+  window.tt = setTimeout(() => t.style.display = "none", 2000);
+}
 
 render();
 </script>
