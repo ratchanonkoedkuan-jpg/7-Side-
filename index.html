@@ -330,7 +330,7 @@ input:focus, select:focus { border-color: var(--accent); }
       </div>
       <div class="actions">
         <button class="btn" onclick="clearPitch()">เคลียร์สนาม</button>
-        <button class="btn" onclick="resetDefault()">รีเซ็ตค่าเริ่มต้น</button>
+        <button class="btn" onclick="resetDefault()">รีเซ็ตรายชื่อเดิม</button>
         <button class="btn primary" onclick="saveTeamSheet()">บันทึกแผนทีม</button>
       </div>
     </div>
@@ -384,8 +384,8 @@ input:focus, select:focus { border-color: var(--accent); }
             <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(event)">
 
             <div class="two">
-              <div class="field"><label>ชื่อ / ชื่อเล่น</label><input id="name" required placeholder="เช่น Messi"></div>
-              <div class="field"><label>เบอร์เสื้อ</label><input id="number" type="number" min="1" max="99" value="10" required></div>
+              <div class="field"><label>ชื่อ / ชื่อเล่น</label><input id="name" required placeholder="เช่น Petch"></div>
+              <div class="field"><label>เบอร์เสื้อ</label><input id="number" type="number" min="1" max="999" value="10" required></div>
             </div>
 
             <div class="two">
@@ -393,7 +393,7 @@ input:focus, select:focus { border-color: var(--accent); }
                 <label>ตำแหน่ง</label>
                 <select id="pos">
                   <option>GK</option><option>CB</option><option>LB</option><option>RB</option>
-                  <option>CM</option><option>CAM</option><option>LW</option><option>RW</option><option>ST</option>
+                  <option>CM</option><option>CAM</option><option>LW</option><option>RW</option><option selected>ST</option>
                 </select>
               </div>
               <div class="field"><label>Overall (OVR)</label><input id="ovr" type="number" min="1" max="99" value="85" required></div>
@@ -417,15 +417,32 @@ input:focus, select:focus { border-color: var(--accent); }
 
 <script>
 const defaultPlayers = [
-  { id: 1, name: "Noppon", number: 1, pos: "GK", ovr: 82, img: "", onPitch: true, x: 12, y: 50 },
-  { id: 2, name: "Jirawat", number: 4, pos: "CB", ovr: 78, img: "", onPitch: true, x: 30, y: 35 },
-  { id: 3, name: "Phudit", number: 5, pos: "CB", ovr: 79, img: "", onPitch: true, x: 30, y: 65 },
-  { id: 4, name: "Saran", number: 6, pos: "CM", ovr: 81, img: "", onPitch: true, x: 52, y: 50 },
-  { id: 5, name: "Teerapat", number: 8, pos: "CAM", ovr: 84, img: "", onPitch: true, x: 70, y: 30 },
-  { id: 6, name: "Thanakorn", number: 7, pos: "RW", ovr: 80, img: "", onPitch: true, x: 70, y: 70 },
-  { id: 7, name: "Pong", number: 9, pos: "ST", ovr: 88, img: "", onPitch: true, x: 86, y: 50 },
-  { id: 8, name: "Kawin", number: 2, pos: "RB", ovr: 75, img: "", onPitch: false, x: 0, y: 0 },
-  { id: 9, name: "Kritsada", number: 10, pos: "CAM", ovr: 83, img: "", onPitch: false, x: 0, y: 0 }
+  { id: 1, name: "Petch", number: 10, pos: "ST", ovr: 88, img: "", onPitch: true, x: 86, y: 50 },
+  { id: 2, name: "June", number: 11, pos: "LW", ovr: 82, img: "", onPitch: true, x: 70, y: 25 },
+  { id: 3, name: "CENTER", number: 8, pos: "CM", ovr: 80, img: "", onPitch: true, x: 52, y: 50 },
+  { id: 4, name: "CHARLIE", number: 17, pos: "RW", ovr: 81, img: "", onPitch: true, x: 70, y: 75 },
+  { id: 5, name: "kxngpr", number: 13, pos: "CAM", ovr: 83, img: "", onPitch: true, x: 68, y: 50 },
+  { id: 6, name: "Chidsanucha", number: 1, pos: "GK", ovr: 82, img: "", onPitch: true, x: 12, y: 50 },
+  { id: 7, name: "DISZAA", number: 4, pos: "CB", ovr: 79, img: "", onPitch: true, x: 32, y: 50 },
+  { id: 8, name: "Kit", number: 99, pos: "ST", ovr: 85, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 9, name: "Superdoopernet", number: 19, pos: "CM", ovr: 78, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 10, name: "Tharapon", number: 7, pos: "RW", ovr: 80, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 11, name: "Chanachoke S.", number: 22, pos: "CB", ovr: 77, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 12, name: "PEE", number: 14, pos: "CM", ovr: 76, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 13, name: "L.Pakin", number: 9, pos: "ST", ovr: 84, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 14, name: "FAH", number: 26, pos: "LB", ovr: 76, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 15, name: "PHURIPHAT", number: 5, pos: "CB", ovr: 78, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 16, name: "ISAWA", number: 88, pos: "CAM", ovr: 81, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 17, name: "NAPATSIT", number: 25, pos: "RB", ovr: 77, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 18, name: "Aekthanick", number: 18, pos: "CM", ovr: 79, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 19, name: "Phoneza", number: 15, pos: "LW", ovr: 78, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 20, name: "Thanthiti", number: 23, pos: "CB", ovr: 76, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 21, name: "3ABYOIL", number: 54, pos: "CM", ovr: 75, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 22, name: "CHAWIN", number: 20, pos: "ST", ovr: 80, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 23, name: "Tanawat", number: 6, pos: "CB", ovr: 77, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 24, name: "THW SRL", number: 50, pos: "CAM", ovr: 79, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 25, name: "S. Mahatthanapaisan", number: 101, pos: "CB", ovr: 82, img: "", onPitch: false, x: 0, y: 0 },
+  { id: 26, name: "SUBSIN", number: 78, pos: "ST", ovr: 79, img: "", onPitch: false, x: 0, y: 0 }
 ];
 
 let players = JSON.parse(localStorage.getItem("pitch_players") || "null") || defaultPlayers;
@@ -672,7 +689,7 @@ function updateLimit() {
 function saveLocal() { localStorage.setItem("pitch_players", JSON.stringify(players)); }
 function saveTeamSheet() { saveLocal(); showToast("บันทึกแผนทีมเรียบร้อยแล้ว!"); }
 function resetDefault() {
-  if (confirm("ต้องการรีเซ็ตข้อมูลทั้งหมดกลับเป็นค่าเริ่มต้น?")) {
+  if (confirm("ต้องการรีเซ็ตข้อมูลนักเตะกลับเป็นรายชื่อเดิมทั้งหมด?")) {
     players = defaultPlayers.map(x => ({...x}));
     saveLocal();
     render();
